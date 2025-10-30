@@ -1,65 +1,27 @@
-import java.util.ArrayList;
-import java.util.List;
-
 public class Customer {
-    private String customerId;
+    private String id;
     private String name;
-    private String contactInfo;
+    private String email;
+    private String phone;
     private String driverLicense;
-    private List<Reservation> reservations;
 
-    public Customer(String name, String contactInfo, String driverLicense) {
-        this.customerId = "CUST" + System.currentTimeMillis();
+    public Customer(String id, String name, String email, String phone, String driverLicense) {
+        this.id = id;
         this.name = name;
-        this.contactInfo = contactInfo;
+        this.email = email;
+        this.phone = phone;
         this.driverLicense = driverLicense;
-        this.reservations = new ArrayList<>();
     }
 
-    // Getters and setters
-    public String getCustomerId() { return customerId; }
+    // Getters
+    public String getId() { return id; }
     public String getName() { return name; }
-    public String getContactInfo() { return contactInfo; }
+    public String getEmail() { return email; }
+    public String getPhone() { return phone; }
     public String getDriverLicense() { return driverLicense; }
-    
-    public void setName(String name) { this.name = name; }
-    public void setContactInfo(String contactInfo) { this.contactInfo = contactInfo; }
-    public void setDriverLicense(String driverLicense) { this.driverLicense = driverLicense; }
 
-    public List<Reservation> getReservations() {
-        return new ArrayList<>(reservations);
-    }
-
-    public void addReservation(Reservation reservation) {
-        if (reservation != null) {
-            reservations.add(reservation);
-        }
-    }
-
-    public void viewReservations() {
-        System.out.println("\nReservations for " + name + ":");
-        if (reservations.isEmpty()) {
-            System.out.println("No reservations found.");
-        } else {
-            for (Reservation r : reservations) {
-                System.out.println("- " + r);
-            }
-        }
-    }
-
-    public void updateInfo(String name, String contactInfo) {
-        if (name != null && !name.trim().isEmpty()) {
-            this.name = name.trim();
-        }
-        if (contactInfo != null) {
-            this.contactInfo = contactInfo;
-        }
-        System.out.println("Customer information updated successfully.");
-    }
-    
     @Override
     public String toString() {
-        return String.format("Customer[ID: %s, Name: %s, Contact: %s, License: %s]",
-            customerId, name, contactInfo, driverLicense);
+        return String.format("%s (ID: %s, License: %s)", name, id, driverLicense);
     }
 }

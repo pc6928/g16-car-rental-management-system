@@ -1,141 +1,107 @@
-import java.util.List;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
+import java.util.List;
 
-/**
- * Singleton class that manages the entire car rental system.
- * Implements the Singleton pattern to ensure only one instance exists.
- */
 public class CarRentalSystem {
-    // Singleton instance
-    private static volatile CarRentalSystem instance;
-    
-    // Private constructor to prevent instantiation
-    private CarRentalSystem() {
+    private List<Car> cars;
+    private List<Customer> customers;
+    private List<Reservation> reservations;
+    private List<Payment> payments;
+
+    public CarRentalSystem() {
         this.cars = new ArrayList<>();
         this.customers = new ArrayList<>();
         this.reservations = new ArrayList<>();
-        this.staffMembers = new ArrayList<>();
-        this.admin = new Admin("ADM001", "System Admin", "Administrator", "ALL");
+        this.payments = new ArrayList<>();
     }
-    
-    /**
-     * Returns the singleton instance of CarRentalSystem.
-     * Uses double-checked locking for thread safety.
-     */
-    public static CarRentalSystem getInstance() {
-        if (instance == null) {
-            synchronized (CarRentalSystem.class) {
-                if (instance == null) {
-                    instance = new CarRentalSystem();
-                }
-            }
-        }
-        return instance;
-    }
-    private final List<Car> cars;
-    private final List<Customer> customers;
-    private final List<Reservation> reservations;
-    private final List<Staff> staffMembers;
-    private final Admin admin;
 
     // Car management
     public void addCar(Car car) {
-        if (car != null && !cars.contains(car)) {
-            cars.add(car);
+        cars.add(car);
+    }
+
+    public List<Car> getAvailableCars(LocalDate startDate, LocalDate endDate) {
+        List<Car> availableCars = new ArrayList<>();
+        
+        for (Car car : cars) {
+            if (isCarAvailable(car, startDate, endDate)) {
+                availableCars.add(car);
+            }
         }
-    }
-
-    public List<Car> getAvailableCars() {
-        return cars.stream()
-                .filter(car -> "Available".equals(car.getStatus()))
-                .collect(Collectors.toList());
-    }
-
-    public List<Car> searchAvailableCars(String dateRange) {
-        // Simplified implementation - in a real system, this would check the date range
-        return getAvailableCars();
+        
+        return availableCars;
     }
 
     // Customer management
     public void addCustomer(Customer customer) {
-        if (customer != null && !customers.contains(customer)) {
-            customers.add(customer);
-        }
-    }
-
-    public Customer findCustomerByName(String name) {
-        return customers.stream()
-                .filter(c -> c.getName().equalsIgnoreCase(name))
-                .findFirst()
-                .orElse(null);
+        customers.add(customer);
     }
 
     // Reservation management
-    public void createReservation(String customerName, String carId, String startDate, String endDate) {
-        Customer customer = findCustomerByName(customerName);
-        Car car = findCarById(carId);
+    public boolean makeReservation(Customer customer, Car car, 
+                                 LocalDate startDate, LocalDate endDate) {
+        if (!isCarAvailable(car, startDate, endDate)) {
+            return false;
+        }
 
-        if (customer != null && car != null && "Available".equals(car.getStatus())) {
-            String reservationId = "RES" + System.currentTimeMillis();
-            Reservation reservation = new Reservation.Builder(reservationId, startDate, endDate, customer, car)
-                .build();
-            
-            if (reservation.validateDates()) {
-                reservations.add(reservation);
-                car.setStatus("Booked");
-                customer.addReservation(reservation);
-                System.out.println("Reservation created: " + reservation);
-            } else {
-                System.out.println("Invalid dates for reservation");
+        String reservationId = "RES" + System.currentTimeMillis();
+        Reservation reservation = new Reservation(
+            reservationId, customer, car, startDate, endDate);
+        reservations.add(reservation);
+        car.setStatus("BOOKED");
+        return true;
+    }
+    
+    // Add an add-on to a reservation
+    public void addAddOnToReservation(String reservationId, AddOn addOn) {
+        for (Reservation r : reservations) {
+            if (r.getId().equals(reservationId)) {
+                r.addAddOn(addOn);
+                break;
             }
-        } else {
-            System.out.println("Could not create reservation. Check customer name and car availability.");
-        }
-    }
-    
-    private Car findCarById(String carId) {
-        return cars.stream()
-            .filter(c -> c.getPlate().equals(carId))
-            .findFirst()
-            .orElse(null);
-    }
-
-    public void initiatePayment(Reservation reservation) {
-        if (reservation != null && reservations.contains(reservation)) {
-            System.out.println("Processing payment of $" + reservation.getTotalCost() + 
-                             " for reservation " + reservation.getReservationId());
-            // In a real system, this would integrate with a payment processor
         }
     }
 
-    // Staff management
-    public void addStaff(Staff staff) {
-        if (staff != null && !staffMembers.contains(staff)) {
-            staffMembers.add(staff);
+    // Payment processing
+    public Payment processPayment(Reservation reservation, String paymentMethod) {
+        String paymentId = "PAY" + System.currentTimeMillis();
+        Payment payment = new Payment(paymentId, reservation, paymentMethod);
+        boolean success = payment.processPayment();
+        
+        if (success) {
+            payments.add(payment);
+            return payment;
         }
+        return null;
     }
 
-    // Utility methods
-    public void listCars() {
-        System.out.println("\nAvailable Cars:");
-        getAvailableCars().forEach(System.out::println);
+    // Helper methods
+    private boolean isCarAvailable(Car car, LocalDate startDate, LocalDate endDate) {
+        if (!car.getStatus().equals("AVAILABLE")) {
+            return false;
+        }
+        
+        for (Reservation r : reservations) {
+            if (r.getCar().equals(car) && 
+                isDateRangeOverlap(
+                    r.getStartDate(), r.getEndDate(), 
+                    startDate, endDate) &&
+                !r.getStatus().equals("CLOSED")) {
+                return false;
+            }
+        }
+        return true;
     }
 
-    public void listCustomers() {
-        System.out.println("\nRegistered Customers:");
-        customers.forEach(System.out::println);
+    private boolean isDateRangeOverlap(
+        LocalDate start1, LocalDate end1, 
+        LocalDate start2, LocalDate end2) {
+        return start1.isBefore(end2) && start2.isBefore(end1);
     }
 
-    public void listReservations() {
-        System.out.println("\nAll Reservations:");
-        reservations.forEach(System.out::println);
-    }
-    
     // Getters
-    public Admin getAdmin() { return admin; }
     public List<Car> getCars() { return new ArrayList<>(cars); }
     public List<Customer> getCustomers() { return new ArrayList<>(customers); }
     public List<Reservation> getReservations() { return new ArrayList<>(reservations); }
-    public List<Staff> getStaffMembers() { return new ArrayList<>(staffMembers); }
+    public List<Payment> getPayments() { return new ArrayList<>(payments); }
 }
