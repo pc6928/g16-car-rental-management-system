@@ -1,38 +1,43 @@
-package src;
-
-import java.time.LocalDate;
-import java.util.Scanner;
-
 public class Main {
     public static void main(String[] args) {
-        CarRentalSystem system = new CarRentalSystem();
-        Scanner sc = new Scanner(System.in);
+        System.out.println("=== Car Rental Management System ===");
 
-        system.addCar(new Car("Toyota", "Camry", 2020, "ABC123", "Sedan", 45.0));
-        system.addCustomer(new Customer("Alice", "alice@example.com", "D1234567"));
+        // Get the singleton instance of CarRentalSystem
+        CarRentalSystem system = CarRentalSystem.getInstance();
 
-        System.out.println("=== Car Rental System ===");
-        System.out.println("1. List Cars");
-        System.out.println("2. Make Reservation");
-        System.out.println("3. List Reservations");
+        // Initialize sample data
+        initializeSampleData(system);
 
-        while (true) {
-            System.out.print("\nChoose option: ");
-            int choice = sc.nextInt();
-            sc.nextLine();
+        // Display system status
+        displaySystemStatus(system);
 
-            switch (choice) {
-                case 1 -> system.listCars();
-                case 2 -> {
-                    System.out.print("Enter car plate: ");
-                    String plate = sc.nextLine();
-                    System.out.print("Enter driver license: ");
-                    String dl = sc.nextLine();
-                    system.makeReservation(plate, dl, LocalDate.now(), LocalDate.now().plusDays(3));
-                }
-                case 3 -> system.listReservations();
-                default -> System.out.println("Invalid option.");
-            }
-        }
+        System.out.println("\nSystem running... (placeholder for console menu or UI)");
+    }
+
+    private static void initializeSampleData(CarRentalSystem system) {
+        // Add sample cars
+        system.addCar(new Car("ABC123", "Toyota", "Corolla", 2020, "Compact", 50.0, "Available"));
+        system.addCar(new Car("XYZ789", "BMW", "X5", 2022, "SUV", 120.0, "Available"));
+
+        // Add sample customers
+        system.addCustomer(new Customer("John Doe", "john@example.com", "DL12345"));
+        system.addCustomer(new Customer("Jane Smith", "jane@example.com", "DL98765"));
+
+        // Create a sample reservation
+        system.createReservation("John Doe", "ABC123", "2025-10-10", "2025-10-15");
+    }
+
+    private static void displaySystemStatus(CarRentalSystem system) {
+        // Display available cars
+        System.out.println("\n=== Available Cars ===");
+        system.listCars();
+
+        // Display all customers
+        System.out.println("\n=== Registered Customers ===");
+        system.listCustomers();
+
+        // Display all reservations
+        System.out.println("\n=== Active Reservations ===");
+        system.listReservations();
     }
 }
