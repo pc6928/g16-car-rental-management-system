@@ -17,7 +17,7 @@ It’s a **console-based prototype** designed to demonstrate core design pattern
 
 ---
 
-## 🧠 Design Notes  
+## 🧠 Design  
 - **Language:** Java  
 - **Pattern Focus:** SRP, MVC-inspired layering  
 - **Scope:** Console prototype only (no DB or frontend yet)  
@@ -26,11 +26,7 @@ It’s a **console-based prototype** designed to demonstrate core design pattern
 ---
 
 ## 🧑‍💻 Authors  
-**Group 16 — SWEN383**  
+**Group 16 — SWEN 383**  
 - Art Lushaku  
 - Daris Dervishaga  
-- Pascal Leon  
-
----
-
-## 📂 Structure  
+- Pascal Leon Çuni
