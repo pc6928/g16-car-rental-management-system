@@ -3,100 +3,67 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CarRentalSystem {
-    private List<Car> cars;
-    private List<Customer> customers;
-    private List<Reservation> reservations;
-    private List<Payment> payments;
-
-    public CarRentalSystem() {
-        this.cars = new ArrayList<>();
-        this.customers = new ArrayList<>();
-        this.reservations = new ArrayList<>();
-        this.payments = new ArrayList<>();
-    }
-
+    private List<Car> cars = new ArrayList<>();
+    private List<Customer> customers = new ArrayList<>();
+    private List<Reservation> reservations = new ArrayList<>();
+    private List<Payment> payments = new ArrayList<>();
+    
     // Car management
     public void addCar(Car car) {
         cars.add(car);
     }
-
-    public List<Car> getAvailableCars(LocalDate startDate, LocalDate endDate) {
-        List<Car> availableCars = new ArrayList<>();
-        
+    
+    public List<Car> getAvailableCars(LocalDate start, LocalDate end) {
+        List<Car> available = new ArrayList<>();
         for (Car car : cars) {
-            if (isCarAvailable(car, startDate, endDate)) {
-                availableCars.add(car);
+            if (isCarAvailable(car, start, end)) {
+                available.add(car);
             }
         }
-        
-        return availableCars;
-    }
-
-    // Customer management
-    public void addCustomer(Customer customer) {
-        customers.add(customer);
-    }
-
-    // Reservation management
-    public boolean makeReservation(Customer customer, Car car, 
-                                 LocalDate startDate, LocalDate endDate) {
-        if (!isCarAvailable(car, startDate, endDate)) {
-            return false;
-        }
-
-        String reservationId = "RES" + System.currentTimeMillis();
-        Reservation reservation = new Reservation(
-            reservationId, customer, car, startDate, endDate);
-        reservations.add(reservation);
-        car.setStatus("BOOKED");
-        return true;
+        return available;
     }
     
-    // Add an add-on to a reservation
-    public void addAddOnToReservation(String reservationId, AddOn addOn) {
-        for (Reservation r : reservations) {
-            if (r.getId().equals(reservationId)) {
-                r.addAddOn(addOn);
-                break;
-            }
-        }
-    }
-
-    // Payment processing
-    public Payment processPayment(Reservation reservation, String paymentMethod) {
-        String paymentId = "PAY" + System.currentTimeMillis();
-        Payment payment = new Payment(paymentId, reservation, paymentMethod);
-        boolean success = payment.processPayment();
-        
-        if (success) {
-            payments.add(payment);
-            return payment;
-        }
-        return null;
-    }
-
-    // Helper methods
-    private boolean isCarAvailable(Car car, LocalDate startDate, LocalDate endDate) {
-        if (!car.getStatus().equals("AVAILABLE")) {
-            return false;
-        }
+    private boolean isCarAvailable(Car car, LocalDate start, LocalDate end) {
+        if (!"AVAILABLE".equals(car.getStatus())) return false;
         
         for (Reservation r : reservations) {
-            if (r.getCar().equals(car) && 
-                isDateRangeOverlap(
-                    r.getStartDate(), r.getEndDate(), 
-                    startDate, endDate) &&
-                !r.getStatus().equals("CLOSED")) {
+            if (r.getCar() == car && isDateRangeOverlap(start, end, r.getStartDate(), r.getEndDate())) {
                 return false;
             }
         }
         return true;
     }
-
-    private boolean isDateRangeOverlap(
-        LocalDate start1, LocalDate end1, 
-        LocalDate start2, LocalDate end2) {
-        return start1.isBefore(end2) && start2.isBefore(end1);
+    
+    // Customer management
+    public void addCustomer(Customer customer) {
+        customers.add(customer);
+    }
+    
+    // Reservation management
+    public Reservation makeReservation(Customer customer, Car car, LocalDate start, LocalDate end) {
+        String reservationId = "R" + (reservations.size() + 1);
+        if (!isCarAvailable(car, start, end)) {
+            throw new IllegalStateException("Car not available");
+        }
+        
+        Reservation reservation = new Reservation(reservationId, customer, car, start, end);
+        reservations.add(reservation);
+        return reservation;
+    }
+    
+    // Payment processing
+    public Payment processPayment(Reservation reservation, String paymentMethod) {
+        String paymentId = "P" + (payments.size() + 1);
+        Payment payment = new Payment(paymentId, reservation);
+        payment.processPayment();
+        payments.add(payment);
+        return payment;
+    }
+    
+    // Helper method
+    private boolean isDateRangeOverlap(LocalDate start1, LocalDate end1, 
+                                     LocalDate start2, LocalDate end2) {
+        return !(end1.isBefore(start2) || start1.isAfter(end2));
     }
 
     // Getters

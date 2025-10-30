@@ -1,7 +1,7 @@
 # 🚗 Car Rental Management System  
 ### Group 16 — Art Lushaku, Daris Dervishaga, & Pascal Leon Çuni
 
-A simple **Java console-based skeleton** for managing cars, customers, and reservations.  
+A simple **Java-based skeleton** for managing cars, customers, and reservations.  
 Implements basic **CRUD** operations with attention to **Single Responsibility Principle (SRP)** and **clean architecture** structure.
 
 ---
