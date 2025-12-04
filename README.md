@@ -1,50 +1,139 @@
-# 🚗 Car Rental Management System  
+# 🚗 Car Rental Management System
 ### Group 16 — Daris Dervishaga, Art Lushaku, & Pascal Leon Çuni
 
-# D3: Anticipated Design Risks & Applied Patterns
-
-TEST TEST, DARIS Dervishaga
-
-1. Car Type Complexity — Strategy Pattern
-
-One anticipated design challenge is supporting multiple car types (Economy, Luxury, SUV), each with distinct pricing and features. This can complicate the class hierarchy and make maintenance harder as new types are added.
-To address this, we plan to define a PricingStrategy interface with a calculatePrice() method and implement specific strategies for each car type.
-Using the Strategy Pattern allows us to introduce new car types and pricing models without modifying existing code, maintaining flexibility and adhering to the Open/Closed Principle.
-
-2. Optional Features (Add-ons) — Decorator Pattern
-
-Another challenge is adding optional features such as GPS or a child seat to cars dynamically without duplicating code or modifying the base Car class.
-To solve this, we use the Decorator Pattern by creating an abstract CarDecorator class that extends Car. Concrete decorators (like GPSDecorator or ChildSeatDecorator) can then wrap existing car objects to add functionality at runtime.
-This approach keeps the core Car class simple while enabling scalable, flexible extensions.
-
-
-
-A simple **Java-based skeleton** for managing cars, customers, and reservations.  
-Implements basic **CRUD** operations with attention to **Single Responsibility Principle (SRP)** and **clean architecture** structure.
+A **Java-based console application** for managing car rentals, customers, and reservations.  
+Implements core design patterns (Singleton, Factory, MVC) with clean architecture and encapsulation.
 
 ---
 
-## 📘 Overview  
-This project provides a foundation for a car rental management system, including:  
-- Adding and editing car records  
-- Creating customer profiles  
-- Making and managing reservations  
-- Handling availability and pricing logic  
+## 📘 Overview
+This project provides a complete car rental management system with:
+- **Car Management**: Add and view cars with rental rates
+- **Customer Management**: Register and view customers
+- **Reservation System**: Rent and return cars with date validation
+- **Console Interface**: User-friendly menu-driven interface
 
-It’s a **console-based prototype** designed to demonstrate core design patterns and application structure before GUI or database integration.
-
----
-
-## 🧠 Design  
-- **Language:** Java  
-- **Pattern Focus:** SRP, MVC-inspired layering  
-- **Scope:** Console prototype only (no DB or frontend yet)  
-- **Future Additions:** GUI, database persistence, authentication
+The system demonstrates **three key design patterns** to address common software design challenges and improve maintainability.
 
 ---
 
-## 🧑‍💻 Authors  
-**Group 16 — SWEN 383**  
+## 🏗️ Architecture & Design Patterns
+
+### 1. **Singleton Pattern** - `RentalRepository`
+**Problem Solved**: Multiple instances of the data repository would create separate data stores, causing data loss and inconsistency.
+
+**Solution**: The `RentalRepository` class uses the Singleton pattern to ensure only one instance exists throughout the application lifecycle. All components access the same shared data store.
+
+**Benefits**:
+- Single source of truth for all data
+- Prevents data duplication and loss
+- Ensures consistency across the application
+
+### 2. **Factory Pattern** - `CarFactory`
+**Problem Solved**: Direct object creation scattered throughout the code makes it harder to modify creation logic and add validation.
+
+**Solution**: The `CarFactory` class centralizes car creation logic. All cars are created through `CarFactory.createCar()`, separating object creation from business logic.
+
+**Benefits**:
+- Centralized creation logic (easy to modify)
+- Future-proof for adding validation or special setup
+- Cleaner, more maintainable code
+
+### 3. **MVC Pattern** - Model-View-Controller
+**Problem Solved**: Mixing business logic, data access, and display code makes the system hard to maintain and test.
+
+**Solution**: 
+- **Model**: `Car`, `Customer`, `Reservation`, `Payment` classes (data and business logic)
+- **View**: `RentalView` class (all console output)
+- **Controller**: `RentalController` class (coordinates between Model and View)
+
+**Benefits**:
+- Separation of concerns
+- Easy to swap UI (console → GUI) without changing business logic
+- Better testability and maintainability
+
+---
+
+## 🎯 Key Features
+
+- ✅ **Flexible ID Input**: Accepts "C001", "001", or "1" for car/customer IDs
+- ✅ **Validation**: Prevents renting already-rented cars
+- ✅ **Date Validation**: Ensures end date is after start date
+- ✅ **Automatic Cost Calculation**: Calculates total based on days and rate
+- ✅ **Status Management**: Tracks car availability (AVAILABLE/BOOKED)
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Java JDK 8 or higher
+- Any Java IDE (IntelliJ, Eclipse, VS Code) or command line
+
+### Running the Application
+
+1. **Compile all Java files**:
+   ```bash
+   javac *.java
+   ```
+
+2. **Run the main class**:
+   ```bash
+   java Main
+   ```
+
+3. **Use the menu**:
+   - Option 1: Rent a Car
+   - Option 2: Return a Car
+   - Option 3: View All Cars
+   - Option 4: View All Customers
+   - Option 5: View All Reservations
+   - Option 6: Exit
+
+### Sample Data
+The system initializes with sample data:
+- 3 cars (Toyota Camry, Honda Accord, Ford Mustang)
+- 2 customers (John Doe, Jane Smith)
+
+---
+
+## 📁 Project Structure
+
+```
+g16-car-rental-management-system/
+├── Main.java                 # Entry point, menu loop
+├── RentalController.java     # MVC Controller - business logic
+├── RentalView.java           # MVC View - console output
+├── RentalRepository.java     # Singleton - data storage
+├── CarFactory.java           # Factory - car creation
+├── Car.java                  # Model - car entity
+├── Customer.java             # Model - customer entity
+├── Reservation.java          # Model - reservation entity
+├── Payment.java              # Model - payment entity
+└── README.md                 # This file
+```
+
+---
+
+## 🧠 Design Principles Applied
+
+- **Encapsulation**: Private fields with public getters/setters
+- **Single Responsibility**: Each class has one clear purpose
+- **Separation of Concerns**: MVC pattern separates logic, data, and display
+- **DRY (Don't Repeat Yourself)**: Helper methods eliminate code duplication
+- **Simple & Defensible**: No advanced features - easy to explain and understand
+
+---
+
+## 🧑‍💻 Authors
+**Group 16 — Software Design**  
 - Art Lushaku  
 - Daris Dervishaga  
 - Pascal Leon Çuni
+
+---
+
+## 📝 Notes
+- All code includes comments explaining **WHY** design decisions were made
+- Code is optimized for clarity and presentation
+- No external dependencies required (pure Java)
