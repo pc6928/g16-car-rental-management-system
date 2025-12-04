@@ -3,7 +3,7 @@
 
 # D3: Anticipated Design Risks & Applied Patterns
 
-TEST TEST, DARIS
+TEST TEST, DARIS Dervishaga
 
 1. Car Type Complexity — Strategy Pattern
 
