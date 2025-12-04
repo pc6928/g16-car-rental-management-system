@@ -3,6 +3,8 @@
 
 # D3: Anticipated Design Risks & Applied Patterns
 
+TEST TEST, DARIS
+
 1. Car Type Complexity — Strategy Pattern
 
 One anticipated design challenge is supporting multiple car types (Economy, Luxury, SUV), each with distinct pricing and features. This can complicate the class hierarchy and make maintenance harder as new types are added.
